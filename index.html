@@ -865,13 +865,15 @@ async function showExportReady(blob, name) {
     submit: 'Done',
     cancel: '',
     body: `<p style="margin:0"><b>${esc(name)}</b> · ${fmtBytes(blob.size)}</p>
-      <p class="muted small" style="margin:0">One file with the itinerary, diary notes and ${plural(state.photos.length, 'photo')}. It opens in any browser, works offline and is view-only. On iPhone, choose Share, then Save to Files.</p>
-      <div class="actions">${canShare ? '<button type="button" class="btn" data-share>Share or save…</button>' : ''}
-        <a class="btn ${canShare ? 'secondary' : ''}" href="${url}" download="${esc(name)}">Download file</a></div>`,
+      <p class="muted small" style="margin:0">One file with the itinerary, diary notes and ${plural(state.photos.length, 'photo')}. It opens in any browser, works offline and is view-only.</p>
+      <p class="muted small" style="margin:0">On iPhone, tap Download file. It's saved to the Downloads folder in the Files app.</p>
+      <div class="actions"><a class="btn" href="${url}" download="${esc(name)}">Download file</a>
+        ${canShare ? '<button type="button" class="btn secondary" data-share>Send to another app…</button>' : ''}</div>`,
   });
-  $('#dlg [data-share]')?.addEventListener('click', () => navigator.share({ files: [file], title: name }).catch(() => {}));
+  // Share the file only. Adding a title or text makes iOS save it as an extra text file.
+  $('#dlg [data-share]')?.addEventListener('click', () => navigator.share({ files: [file] }).catch(() => {}));
   await done;
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
 /* ================= Import (archives + previous Nagoya version) ================= */
